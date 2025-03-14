@@ -1,67 +1,73 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(MaterialApp(
+    home: LoginScreen(),
+  ));
 }
 
-class MyApp extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _userController = TextEditingController();
+  final _passwordController = TextEditingController();
+  String _errorMessage = '';
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Vehículos',
-      home: Scaffold(
-        appBar: AppBar(
-          title: Center(child: Text('Usuario: Pepe Perez')),
-        ),
-        body: ListView(
-          padding: EdgeInsets.all(8.0),
+    return Scaffold(
+      appBar: AppBar(title: Text('Iniciar Sesión')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column( mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            buildVehicleCard('ERF888', 'Juan Carlos', 'XYZ'),
-            buildVehicleCard('ERF888', 'Juan Carlos', 'XYZ'),
-            buildVehicleCard('ERF888', 'Juan Carlos', 'XYZ'),
+            Text('Login', style: TextStyle(fontSize: 24)),
+            SizedBox(height: 20),TextField(controller: _userController,
+              decoration: InputDecoration(labelText: 'Usuario'),
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: _passwordController,
+              decoration: InputDecoration(labelText: 'Clave'),
+              obscureText: true,
+            ),
+            SizedBox(height: 10),
+            if (_errorMessage.isNotEmpty) 
+              Text(
+                _errorMessage,
+                style: TextStyle(color: Colors.red),
+              ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                String usuario = _userController.text;
+                String clave = _passwordController.text;
+
+                if (usuario == 'admin' && clave == 'admin') {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text('Iniciando sesión'),
+                  ));
+                } else {
+                  setState(() {
+                    _errorMessage = 'Credenciales incorrectas';
+                  });
+                }
+              },
+              child: Text('Iniciar sesión'),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget buildVehicleCard(String placa, String conductor, String empresa) {
-    return Card(
-      margin: EdgeInsets.symmetric(vertical: 10),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 50,
-                  height: 50,
-                  color: Colors.grey,
-                 
-                ),
-                SizedBox(width: 20),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Placa: $placa', style: TextStyle(fontSize: 16)),
-                    Text('Conductor: $conductor', style: TextStyle(fontSize: 16)),
-                    Text('Empresa: $empresa', style: TextStyle(fontSize: 16)),
-                  ],
-                ),
-              ],
-            ),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                // Acción del botón
-                print('Botón presionado para vehículo $placa');
-              },
-              child: Text('Ver detalles'),
-            )
-          ],
-        ),
-      ),
-    );
+  @override
+  void dispose() {
+    _userController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 }
